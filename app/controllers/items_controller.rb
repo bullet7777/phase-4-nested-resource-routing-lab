@@ -2,20 +2,23 @@ class ItemsController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
   def index
     if params[:user_id]
-      user_id = User.find(params[:user_id])
-      items = user_id.items
+      user = User.find(params[:user_id])
+      items = user.items
     else
       items = Item.all
     end
     render json: items, include: :user
   end 
   def show
-    item = Item.find(params[:id])
+    user = User.find(params[:user_id])
+    item = user.items.find(params[:id])
     render json: item, include: :user
   end
 
   def create
-    item = Item.create(item_params)
+    user = User.find(params[:user_id])
+
+    item = user.items.create(item_params)
     render json: item, status: :created
   end
   private
